@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Engineer Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+        }
+        .message {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">
+                <i class="fas fa-robot mr-2"></i>
+                Software Engineer Chatbot
+            </h1>
+            <div id="nav-user" class="hidden">
+                <span id="username-display" class="mr-4"></span>
+                <button id="logout-btn" class="bg-blue-700 px-4 py-2 rounded hover:bg-blue-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                </button>
+            </div>
+            <div id="nav-auth" class="space-x-2">
+                <button id="login-btn" class="bg-blue-700 px-4 py-2 rounded hover:bg-blue-800">
+                    <i class="fas fa-sign-in-alt mr-1"></i>Login
+                </button>
+                <button id="register-btn" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700">
+                    <i class="fas fa-user-plus mr-1"></i>Register
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <!-- Authentication Forms -->
+        <div id="auth-section" class="max-w-md mx-auto">
+            <!-- Login Form -->
+            <div id="login-form" class="hidden bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+                <form id="login-form-element">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                        <input type="text" id="login-username" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <input type="password" id="login-password" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                        Login
+                    </button>
+                </form>
+                <p class="mt-4 text-center">
+                    Don't have an account? 
+                    <button id="show-register" class="text-blue-600 hover:underline">Register here</button>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="register-form" class="hidden bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Register</h2>
+                <form id="register-form-element">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                        <input type="text" id="reg-username" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="reg-email" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                        <input type="text" id="reg-fullname"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Years of Experience</label>
+                        <input type="number" id="reg-experience" min="0" max="50" value="0"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Current Role</label>
+                        <input type="text" id="reg-role" placeholder="e.g., Software Engineer"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <input type="password" id="reg-password" required minlength="8"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+                        Register
+                    </button>
+                </form>
+                <p class="mt-4 text-center">
+                    Already have an account? 
+                    <button id="show-login" class="text-blue-600 hover:underline">Login here</button>
+                </p>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="main-app" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Tech Stack Management -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-cogs mr-2"></i>Tech Stack
+                        </h3>
+                        
+                        <!-- Current Tech Stack -->
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Your Technologies</h4>
+                            <div id="current-tech-stack" class="space-y-2">
+                                <!-- Tech stack items will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Add Tech Stack -->
+                        <div class="mb-4">
+                            <h4 class="font-semibold mb-2">Add Technologies</h4>
+                            <select id="tech-category-filter" class="w-full px-3 py-2 border rounded mb-2">
+                                <option value="">All Categories</option>
+                            </select>
+                            <div id="available-tech-stack" class="max-h-40 overflow-y-auto border rounded p-2">
+                                <!-- Available tech stack items will be populated here -->
+                            </div>
+                            <button id="update-tech-stack" class="w-full bg-blue-600 text-white py-2 rounded mt-2 hover:bg-blue-700">
+                                Update Tech Stack
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interview Questions -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-question-circle mr-2"></i>Interview Questions
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <button id="generate-questions" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                                <i class="fas fa-magic mr-1"></i>Generate Questions
+                            </button>
+                            <button id="practice-interview" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+                                <i class="fas fa-play mr-1"></i>Practice Interview
+                            </button>
+                        </div>
+
+                        <div id="interview-questions" class="mt-4 space-y-3">
+                            <!-- Interview questions will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Interface -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">
+                                <i class="fas fa-comments mr-2"></i>AI Assistant
+                            </h3>
+                            <button id="new-chat" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                <i class="fas fa-plus mr-1"></i>New Chat
+                            </button>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="chat-container bg-gray-50 p-4 rounded-lg mb-4" id="chat-messages">
+                            <div class="message bg-blue-100 p-3 rounded-lg">
+                                <div class="flex items-start space-x-2">
+                                    <i class="fas fa-robot text-blue-600 mt-1"></i>
+                                    <div>
+                                        <p class="font-semibold text-blue-700">AI Assistant</p>
+                                        <p>Hello! I'm your AI assistant specialized in software engineering. I can help you with programming questions, technical problems, career advice, and more. What would you like to know?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="flex space-x-2">
+                            <input type="text" id="chat-input" placeholder="Ask me about software engineering..."
+                                   class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            <button id="send-message" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interview Questions Modal -->
+    <div id="interview-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-2xl max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Interview Questions</h3>
+                <button id="close-interview-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="interview-questions-content">
+                <!-- Questions will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-xl">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-spinner fa-spin text-blue-600"></i>
+                <span>Processing...</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
